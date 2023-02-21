@@ -1,0 +1,139 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+ul{
+    list-style: none;
+}
+input{
+    border-style: ridge;
+}
+input:focus-visible{
+    outline: none;
+}
+a{
+    color: #000;
+    display: block;
+    text-decoration: none;
+}
+body{
+    background-color: #eee;
+}
+:root{
+    --color__primary: rgb(247, 4, 105);
+    --color__hover: rgb(216, 0, 90);
+    --header__height: 40px;
+}
+
+.btn__primary__my{
+    padding: 8px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    background-color: var(--color__primary);
+    transition-duration: 200ms;
+}
+.btn__primary__my:hover{
+    background-color: var(--color__hover);
+    transform: scale(1.1);
+}
+.btn__primary__my:active{
+    transform: scale(0.9);
+}
+.center__element{
+    margin: var(--header__height) 0;
+}
+/* ================================PAGE=============================== */
+
+.header{
+    position: fixed;
+    top:0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background-color: var(--color__primary);
+    height: var(--header__height);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header__content{
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.header__content__nav{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 0;
+    
+}
+.header__content__nav .item{
+    text-transform: uppercase;
+}
+.header__content__nav input{
+    border: none;
+    font-size: 16px;
+    background-color: transparent;
+    color:#fff;
+}
+.main_container{
+    background-color: #fff;
+    
+}
+.nav__search__box{
+    display: flex;
+    align-items: center;
+    border: 2px solid #fff;
+    padding: 0 8px;
+    border-radius: 4px;
+}
+.nav__search__box ion-icon{
+    font-size: 20px;
+    cursor: pointer;
+}
+.header__content__nav input::placeholder{
+    color: #fff;
+}
+.box{
+    padding: 16px;
+    background-color: #fff;
+}
+.box .input__item{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 8px 0;
+}
+.box label{
+    min-width: 100px;
+}
+.box input{
+   flex: 1;
+   padding: 4px 8px;
+   border-color: #eee;
+   border-radius: 4px;
+}
+.box input::placeholder{
+    color: #bbb;
+    font-size: 14px;
+}
+
+.select__box{
+    background-color: #fff;
+    padding: 16px;
+}
+.select__item{
+}
+.select__box select{
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;;
+}
