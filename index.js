@@ -21,13 +21,6 @@ $(document).ready(function () {
         },
         {
             type: 'text',
-            id: 'content',
-            label: 'Content',
-            placeholder: 'Type your content...',
-        },
-        
-        {
-            type: 'text',
             id: 'coupon',
             label: 'Coupon',
             placeholder: 'Type your coupon...',
@@ -41,9 +34,6 @@ $(document).ready(function () {
 
     ]
     const selects = [
-        {
-            label: 'Province',
-        },
         {
             label: 'District',
         },
@@ -64,13 +54,64 @@ $(document).ready(function () {
             "level1":"Áo"
         }
     }
+    const addiamges = [
+        'https://www.sodomach.com/uploads/contents/kinh-nghiem-kinh-doanh-shop-quan-ao-thoi-trang-online_1607073908.jpg',
+        'https://www.baobiphuthanh.com/uploads/content/kinh-nghiem-kinh-doanh-quan-ao-online_1633689824.jpg'
+    ]
+    $('.product').html(
+        `
+        <div class="product__item">
+            <div class="left">
+                <img src="https://bizweb.dktcdn.net/thumb/1024x1024/100/415/697/products/1-af0c84b6-d733-4bef-8dcf-d8a7d6bc30b8.jpg" alt="">
+                <div class="product__content">
+                    <div class="heading">
+                        ${product.name}
+                    </div>
+                    <div class="desc">
+                        ${product.code}
+                    </div>
+                    <div class="prices">
+                        <span>${product.quantity}</span>
+                        <span>x</span>
+                        <span>${product.price}vnd</span>
+                    </div>
+                </div>
+            </div>
+            <ion-icon name="close-circle-outline"></ion-icon>
+        </div>
+        `
+    );
+    $('.products').html(
+        Array(8).fill().map(item=>{
+            return `
+                <div class="col col-3">
+                    <div class="product__sale mt-4">
+                        <img src="https://bizweb.dktcdn.net/thumb/1024x1024/100/415/697/products/1-af0c84b6-d733-4bef-8dcf-d8a7d6bc30b8.jpg" alt="">
+                        <div class="title">
+                            ${product.name}
+                        </div>
+                        <div class="price">
+                            ${product.price}vnd
+                        </div>
+                    </div>
+                </div>
+            `
+        })
+    );
+    $('.addiamges').html(
+        addiamges.map(item=>{
+            return `
+                <img src="${item}" alt="">
+            `
+        })
+    );
     $('.box').html(
         input__data.map(item=>{
             return `
                 <div class = 'col col-6'>
                     <div class="input__item">
                         <label for="${item.id}">${item.label}:</label>
-                        <input type="${item.type}" name="${item.id}" id="${item.id}" class="${item.id}" placeholder='${item.placeholder}'>
+                        <input type="${item.type}" name="${item.id}" id="${item.id}" class="${item.id}" placeholder='${item.placeholder}' spellcheck='false'>
                     </div>
                 </div>
             `
@@ -80,6 +121,7 @@ $(document).ready(function () {
         selects.map((item,index)=>{
             return `
                 <div class="col col-6">
+                    <div className="title">${item.label}:</div>
                     <div class="select__item">
                         <select ="${item.label}" id="${item.label}" class="select__item" ${index !== 0 && 'disabled'}>
                         </select>
@@ -88,75 +130,89 @@ $(document).ready(function () {
             `
         })
     );
+    $('#products__fee').html(
+        `<span class='product__fee__item'>${product.quantity*product.price}</span>
+        <span>vnd</span>
+        `
+    );
     function getProvince(){
         $.ajax({
             type: "get",
-            url: "https://online-gateway.ghn.vn/shiip/public-api/master-data/province",
+            url: 'https://online-gateway.ghn.vn/shiip/public-api/master-data/district',
             headers: {
                 'token': '97617b3a-b132-11ed-9dc6-f64f768dbc22'
             },
+            data: {
+                "province_id":202
+            },
             success: function (response) {
                 const {data} = response
-                $('#Province').html(data.map(item=>{
+                $('#District').html(data.map(item=>{
                     return `
-                        <option value="${item.ProvinceID}" class="option" id='${item.ProvinceID}'>${item.ProvinceName}</option>
+                        <option value="${item.DistrictID}" class="option" id='${item.DistrictID}'>${item.DistrictName}</option>
                     `
                 }));
-                $('#Province').change(function (e) { 
+                $('#District').change(function (e) { 
+                    $('.loading').css('display','flex');
                     e.preventDefault();
-                    console.log($('#Province').val())
                     $.ajax({
                         type: "get",
-                        url: 'https://online-gateway.ghn.vn/shiip/public-api/master-data/district',
+                        url: 'https://online-gateway.ghn.vn/shiip/public-api/master-data/ward?',
                         headers: {
                             'token': '97617b3a-b132-11ed-9dc6-f64f768dbc22'
                         },
                         data: {
-                            "province_id": $('#Province').val()
+                            "district_id": $('#District').val()
                         },
                         success: function (response) {
+                            $('.loading').css('display','none');
                             const {data} = response
-                            $('#District').html(
+                            $('#Ward').html(
                                 data.map(item=>{
                                     return `
-                                    <option value="${item.DistrictID}" class="option" id='${item.DistrictID}'>${item.DistrictName}</option>
+                                    <option value="${item.WardCode}" class="option" id='${item.WardCode}'>${item.WardName}</option>
                                     `
                                 })
                             );
-                            $('#District').removeAttr('disabled');
-                            $('#District').change(function (e) { 
-                                e.preventDefault();
-                                console.log( $('#District').val())
-                                $.ajax({
-                                    type: "get",
-                                    url: 'https://online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id',
-                                    headers: {
-                                        'token': '97617b3a-b132-11ed-9dc6-f64f768dbc22'
-                                    },
-                                    data: {
-                                        "district_id": 3218
-                                    },
-                                    success: function (response) {
-                                        const {data} = response
-                                        console.log(data)
-                                        // $('#Ward').html(
-                                        //     data.map(item=>{
-                                        //         return `
-                                        //         <option value="${item.WardCode}" class="option" id='${item.WardCode}'>${item.WardName}</option>
-                                        //         `
-                                        //     })
-                                        // );
-                                        // $('#Ward').removeAttr('disabled');
-                                    }
-                                });
-                                
-                            });
+                            $('#Ward').removeAttr('disabled');
                         }
                     });
+                    
                 });
-                
             }
         });
     }
     getProvince()
+    $('.btn__apply').click(function (e) { 
+        e.preventDefault();
+        $('.loading').css('display','flex');
+        const order = {
+            "from_district_id":1450,
+            "service_id":53320,
+            "service_type_id":null,
+            "to_district_id": Number($('#District').val()),
+            "to_ward_code":$('#Ward').val(),
+            "height":product.height,
+            "length":product.length,
+            "weight":200,
+            "width":product.width,
+            "insurance_value":10000,
+            "coupon": null
+        }
+        $.ajax({
+            type: "get",
+            url:'https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee?' ,
+            headers: {
+                'token': '97617b3a-b132-11ed-9dc6-f64f768dbc22',
+                'ShopId': '3817797-hoinhungnguoidaytainang'
+            },
+            data: order,
+            success: function (response) {
+                $('.loading').css('display','none');
+                const {data} = response
+                $('#shipping__fee').html(data.total + 'vnd');
+                $('.total__price').html(data.total + Number($('.product__fee__item').text())+'vnd');
+            }
+        });
+    });
 });
