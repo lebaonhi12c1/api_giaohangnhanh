@@ -178,61 +178,30 @@ $(document).ready(function () {
                                 })
                             );
                             $('#Ward').removeAttr('disabled');
-                            $('#Ward').change(function (e) { 
-                                e.preventDefault();
-                                $('.loading').css('display','flex');
-                                const order = {
-                                    "from_district_id":1450,
-                                    "service_id":53320,
-                                    "service_type_id":null,
-                                    "to_district_id": Number($('#District').val()),
-                                    "to_ward_code":$('#Ward').val(),
-                                    "height":product.height,
-                                    "length":product.length,
-                                    "weight":200,
-                                    "width":product.width,
-                                    "insurance_value":10000,
-                                    "coupon": null
+                            $.ajax({
+                                type: "get",
+                                url: "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services",
+                                headers: {
+                                    'token': '97617b3a-b132-11ed-9dc6-f64f768dbc22',
+                                    'ShopId': '3817797-hoinhungnguoidaytainang'
+                                },
+                                data: {
+                                    "shop_id":  3817797,
+                                    "from_district": 1450,
+                                    "to_district": Number($('#District').val())
+                                },
+                                success: function (response) {
+                                    const {data} = response
+                                    console.log(data)
+                                    $('#Services').html(
+                                        data.map(item=>{
+                                            return `
+                                                <option value="${item.service_id}" type="${item.service_type_id}" class="option" id='${item.service_id}'>${item.short_name}</option>
+                                            `   
+                                        })
+                                    );
+                                    $('#Services').removeAttr('disabled');
                                 }
-                                $.ajax({
-                                    type: "get",
-                                    url:'https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee?' ,
-                                    headers: {
-                                        'token': '97617b3a-b132-11ed-9dc6-f64f768dbc22',
-                                        'ShopId': '3817797-hoinhungnguoidaytainang'
-                                    },
-                                    data: order,
-                                    success: function (response) {
-                                        $('.loading').css('display','none');
-                                        const {data} = response
-                                        $('#shipping__fee').html(data.total + 'vnd');
-                                        $('.total__price').html(data.total + Number($('.product__fee__item').text())+'vnd');
-                                    }
-                                });
-                                $.ajax({
-                                    type: "get",
-                                    url: "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services",
-                                    headers: {
-                                        'token': '97617b3a-b132-11ed-9dc6-f64f768dbc22',
-                                        'ShopId': '3817797-hoinhungnguoidaytainang'
-                                    },
-                                    data: {
-                                        "shop_id":885,
-                                        "from_district": 1450,
-                                        "to_district": Number($('#District').val())
-                                    },
-                                    success: function (response) {
-                                        const {data} = response
-                                        $('#Services').html(
-                                            data.map(item=>{
-                                                return `
-                                                    <option value="${item.service_id}" class="option" id='${item.service_id}'>${item.short_name}</option>
-                                                `
-                                            })
-                                        );
-                                        $('#Services').removeAttr('disabled');
-                                    }
-                                });
                             });
                         }
                     });
@@ -242,4 +211,37 @@ $(document).ready(function () {
         });
     }
     getProvince()
+    $('#btn__apply').click(function (e) { 
+        e.preventDefault();
+        $('.loading').css('display','flex');
+        const order = {
+            "from_district_id":1450,
+            "service_id":Number($('#Services').val()),
+            "service_type_id":Number($(`#${$('#Services').val()}`).attr('type')),
+            "to_district_id": Number($('#District').val()),
+            "to_ward_code":$('#Ward').val(),
+            "height":product.height,
+            "length":product.length,
+            "weight":200,
+            "width":product.width,
+            "insurance_value":10000,
+            "coupon": null
+        }
+        console.log(order)
+        $.ajax({
+            type: "get",
+            url:'https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee?' ,
+            headers: {
+                'token': '97617b3a-b132-11ed-9dc6-f64f768dbc22',
+                'ShopId': '3817797-hoinhungnguoidaytainang'
+            },
+            data: order,
+            success: function (response) {
+                $('.loading').css('display','none');
+                const {data} = response
+                $('#shipping__fee').html(data.total + 'vnd');
+                $('.total__price').html(data.total + Number($('.product__fee__item').text())+'vnd');
+            }
+        });
+    });
 });
